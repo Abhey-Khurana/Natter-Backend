@@ -3,7 +3,6 @@ import bcrypt from "bcrypt";
 
 async function register(req, res) {
     try {
-        // console.log(req.body);
         const { username, email, password } = req.body;
         const userNameCheck = await User.findOne({ username });
         console.log(userNameCheck);
@@ -17,18 +16,18 @@ async function register(req, res) {
             return res.json({ message: "Email already exists", status: false });
         }
 
-        const hashedPassword = await bcrypt.hash(password,10);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-        const user=await User.create({
+        const user = await User.create({
             username,
             email,
-            password:hashedPassword
+            password: hashedPassword
         });
 
         delete user.password;
-        return res.status(201).json({message:"User created Successfully.",status:true,user});
+        return res.status(201).json({ message: "User created Successfully.", status: true, user });
     }
-    catch (err) {   
+    catch (err) {
         console.log(err);
     }
 
@@ -36,4 +35,31 @@ async function register(req, res) {
 
 }
 
-export { register };
+async function login(req, res) {
+    try {
+        console.log(req.body);
+
+
+        const { username, password } = req.body;
+        const user = await User.findOne({ username });
+        console.log(user);
+
+        if (!user) {
+            return res.json({ message: "Enter Correct Username.", status: false });
+        }
+
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordCorrect) {
+            return res.json({ message: "Enter Correct Password.", status: false });
+        }
+
+        delete user.password;
+        return res.status(201).json({ message: "User Logged in Successfully.", status: true, user });
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+export { register, login };
