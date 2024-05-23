@@ -25,7 +25,7 @@ async function register(req, res) {
         });
 
         delete user.password;
-        console.log(user);
+        // console.log(user);
         return res.status(201).json({ message: "User created Successfully.", status: true, user });
     }
     catch (err) {
@@ -38,12 +38,12 @@ async function register(req, res) {
 
 async function login(req, res) {
     try {
-        console.log(req.body);
+        // console.log(req.body);
 
 
         const { username, password } = req.body;
         const user = await User.findOne({ username });
-        console.log(user);
+        // console.log(user);
 
         if (!user) {
             return res.json({ message: "Enter Correct Username.", status: false });
@@ -64,7 +64,7 @@ async function login(req, res) {
 }
 
 async function setAvatar(req, res, next) {
-    console.log(req.params);
+    // console.log(req.params);
     try {
         const userId = req.params.id;
         const avatarImage = req.body.avatarImage;
@@ -72,15 +72,15 @@ async function setAvatar(req, res, next) {
         const userData = await User.findByIdAndUpdate(
             userId,
             {
-              isAvatarImageSet: true,
-              avatarImage,
+                isAvatarImageSet: true,
+                avatarImage,
             },
             { new: true }
-          );
+        );
 
-        return  res.status(200).json({
-                isSet: userData.isAvatarImageSet,
-                image: userData.avatarImage
+        return res.status(200).json({
+            isSet: userData.isAvatarImageSet,
+            image: userData.avatarImage
         });
     }
     catch (err) {
@@ -88,4 +88,23 @@ async function setAvatar(req, res, next) {
     }
 
 }
-export { register, login, setAvatar };
+async function getAllUsers(req, res, next) {
+
+    // console.log(req.params);
+    try {
+        const currUserId = req.params.id;
+        const allusers = await User.find({ _id: { $ne: currUserId } }).select([
+            "_id",
+            "email",
+            "username",
+            "avatarImage"
+        ]);
+        return res.json(allusers);
+    }
+    catch (err) {
+        next(err);
+    }
+
+}
+
+export { register, login, setAvatar, getAllUsers };
