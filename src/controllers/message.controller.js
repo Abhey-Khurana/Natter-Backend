@@ -39,9 +39,6 @@ async function getAllMessages(req, res, next) {
             message: msg.message.text,
           };
         });
-
-        // console.log(projectedMessages)
-        // console.log(messages);
         res.json(projectedMessages);
       } catch (ex) {
         next(ex);
